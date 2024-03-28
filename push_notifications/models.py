@@ -21,6 +21,7 @@ BROWSER_TYPES = (
 
 
 class Device(models.Model):
+	id = models.AutoField(primary_key=True, auto_created=True, verbose_name="ID")
 	name = models.CharField(max_length=255, verbose_name=_("Name"), blank=True, null=True)
 	active = models.BooleanField(
 		verbose_name=_("Is active"), default=True,
@@ -89,6 +90,7 @@ class GCMDeviceQuerySet(models.query.QuerySet):
 
 
 class GCMDevice(Device):
+	id = models.AutoField(primary_key=True, auto_created=True, verbose_name="ID")
 	# device_id cannot be a reliable primary key as fragmentation between different devices
 	# can make it turn out to be null and such:
 	# http://android-developers.blogspot.co.uk/2011/03/identifying-app-installations.html
@@ -99,13 +101,13 @@ class GCMDevice(Device):
 	registration_id = models.TextField(verbose_name=_("Registration ID"), unique=SETTINGS["UNIQUE_REG_ID"])
 	cloud_message_type = models.CharField(
 		verbose_name=_("Cloud Message Type"), max_length=3,
-		choices=CLOUD_MESSAGE_TYPES, default="FCM",
-		help_text=_("You should choose FCM, GCM is deprecated")
+		choices=CLOUD_MESSAGE_TYPES, default="GCM",
+		help_text=_("You should choose FCM or GCM")
 	)
 	objects = GCMDeviceManager()
 
 	class Meta:
-		verbose_name = _("FCM device")
+		verbose_name = _("GCM device")
 
 	def send_message(self, message, **kwargs):
 		from .gcm import send_message as fcm_send_message
@@ -156,6 +158,7 @@ class APNSDeviceQuerySet(models.query.QuerySet):
 
 
 class APNSDevice(Device):
+	id = models.AutoField(primary_key=True, auto_created=True, verbose_name="ID")
 	device_id = models.UUIDField(
 		verbose_name=_("Device ID"), blank=True, null=True, db_index=True,
 		help_text=_("UUID / UIDevice.identifierForVendor()")
@@ -243,6 +246,7 @@ class WebPushDeviceQuerySet(models.query.QuerySet):
 
 
 class WebPushDevice(Device):
+	id = models.AutoField(primary_key=True, auto_created=True, verbose_name="ID")
 	registration_id = models.TextField(verbose_name=_("Registration ID"), unique=SETTINGS["UNIQUE_REG_ID"])
 	p256dh = models.CharField(
 		verbose_name=_("User public encryption key"),
